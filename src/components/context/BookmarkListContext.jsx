@@ -1,7 +1,4 @@
-import { createContext, useContext, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import useFetch from "../../hooks/useFetch";
-import Loader from "../Loader/Loader";
+import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 const BASE_URL = "http://localhost:5000";
@@ -9,23 +6,58 @@ const BookmarkContext = createContext();
 
 function BookmarkListProvider({ children }) {
   const [currentBookmark, setcurrentBookmark] = useState(null);
-  const [isLoadingCurrentBookmark, setisLoadingCurrentBookmark] =
-    useState(false);
 
-  const { isLoading, data: bookmarks } = useFetch(`${BASE_URL}/bookmarks`);
+  const [bookmarks, setBookmarks] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchBookmarkList() {
+      setIsLoading(true);
+      try {
+        const { data } = await axios.get(`${BASE_URL}/bookmarks`);
+        console.log(data);
+        setBookmarks(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+        toast.error(error.message);
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchBookmarkList();
+  }, []);
 
   async function getBookmark(id) {
-    setisLoadingCurrentBookmark(true);
-    setcurrentBookmark(null)
+    setIsLoading(true);
+    setcurrentBookmark(null);
     try {
       const { data } = await axios.get(`${BASE_URL}/bookmarks/${id}`);
       console.log(data);
       setcurrentBookmark(data);
-      setisLoadingCurrentBookmark(false);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
       toast.error(error.message);
-      setisLoadingCurrentBookmark(false);
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function createBookmark(newBookmark) {
+    setIsLoading(true);
+    try {
+      const { data } = await axios.post(`${BASE_URL}/bookmarks/`, newBookmark);
+      console.log(data);
+      setcurrentBookmark(data);
+      setBookmarks((prev) => [...prev, data]);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -36,7 +68,8 @@ function BookmarkListProvider({ children }) {
         bookmarks,
         currentBookmark,
         getBookmark,
-        isLoadingCurrentBookmark,
+
+        createBookmark,
       }}
     >
       {children}

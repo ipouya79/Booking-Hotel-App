@@ -7,8 +7,7 @@ import ReactCountryFlag from "react-country-flag";
 function SingleBookmark() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { getBookmark, isLoadingCurrentBookmark, currentBookmark } =
-    useBookmark();
+  const { getBookmark, isLoading, currentBookmark } = useBookmark();
 
   useEffect(() => {
     getBookmark(id);
@@ -18,7 +17,7 @@ function SingleBookmark() {
     navigate(-1);
   };
 
-  if (isLoadingCurrentBookmark || !currentBookmark) return <Loader></Loader>;
+  if (isLoading || !currentBookmark) return <Loader></Loader>;
 
   return (
     <div>
@@ -27,15 +26,11 @@ function SingleBookmark() {
       </button>
       <h2 className="mt-2">{currentBookmark.cityName}</h2>
 
-
       <div className="bookmarkItem mt-2">
-                <ReactCountryFlag svg countryCode={currentBookmark.countryCode} />
-                &nbsp; <strong>{currentBookmark.cityName}</strong> &nbsp;
-                <span>{currentBookmark.country}</span>
-              </div>
-      {/* <p>
-        {currentBookmark.cityName} - {currentBookmark.country}
-      </p> */}
+        <ReactCountryFlag svg countryCode={currentBookmark.countryCode} />
+        &nbsp; <strong>{currentBookmark.cityName}</strong> &nbsp;
+        <span>{currentBookmark.country}</span>
+      </div>
     </div>
   );
 }
