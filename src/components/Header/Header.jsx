@@ -1,21 +1,23 @@
-import { MdLocationOn } from "react-icons/md";
+import { MdLocationOn, MdLogout } from "react-icons/md";
 import { HiCalendar, HiMinus, HiPlus, HiSearch } from "react-icons/hi";
 import { useRef, useState } from "react";
-import useOutSideClick from "../../hooks/useOutSideClick";
+import useOutsideClick from "../../hooks/useOutsideClick";
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRange } from "react-date-range";
 import { format } from "date-fns";
 import {
+  NavLink,
   createSearchParams,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
 
 function Header() {
-  const [SearchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [destination, setDestination] = useState(
-    SearchParams.get("destination") || ""
+    searchParams.get("destination") || ""
   );
   const [openOptions, setOpenOptions] = useState(false);
   const [options, setOptions] = useState({
@@ -23,7 +25,6 @@ function Header() {
     children: 0,
     room: 1,
   });
-
   const [date, setDate] = useState([
     {
       startDate: new Date(),
@@ -31,24 +32,24 @@ function Header() {
       key: "selection",
     },
   ]);
-
   const [openDate, setOpenDate] = useState(false);
   const navigate = useNavigate();
-  const handleOptions = (name, operation) => {
-    setOptions((prev) => ({
-      ...prev,
-      [name]: operation === "inc" ? options[name] + 1 : options[name] - 1,
-    }));
-  };
 
+  const handleOptions = (name, operation) => {
+    setOptions((prev) => {
+      return {
+        ...prev,
+        [name]: operation === "inc" ? options[name] + 1 : options[name] - 1,
+      };
+    });
+  };
   const handleSearch = () => {
     const encodedParams = createSearchParams({
       date: JSON.stringify(date),
       destination,
       options: JSON.stringify(options),
     });
-
-    //    Note: // setSearchParams(encodedParams)
+    //note : =>  setSearchParams(encodedParams);
     navigate({
       pathname: "/hotels",
       search: encodedParams.toString(),
@@ -57,6 +58,7 @@ function Header() {
 
   return (
     <div className="header">
+      <NavLink to="/bookmark">Bookmarks</NavLink>
       <div className="headerSearch">
         <div className="headerSearchItem">
           <MdLocationOn className="headerIcon locationIcon" />
@@ -90,10 +92,10 @@ function Header() {
           )}
           <span className="seperator"></span>
         </div>
-
         <div className="headerSearchItem">
           <div id="optionDropDown" onClick={() => setOpenOptions(!openOptions)}>
-            {options.adult} adult &bull; {options.children} children &bull;{" "}
+            {options.adult} adult &nbsp;&bull;&nbsp; {options.children} children
+            &nbsp;&bull;&nbsp;
             {options.room} room
           </div>
           {openOptions && (
@@ -105,24 +107,23 @@ function Header() {
           )}
           <span className="seperator"></span>
         </div>
-
         <div className="headerSearchItem">
           <button className="headerSearchBtn" onClick={handleSearch}>
             <HiSearch className="headerIcon" />
           </button>
         </div>
       </div>
+      <User />
     </div>
   );
 }
-
 export default Header;
 
-function GuestOptionList({ setOpenOptions, options, handleOptions }) {
-  const optionRef = useRef();
-  useOutSideClick(optionRef, "optionDropDown", () => setOpenOptions(false));
+function GuestOptionList({ options, handleOptions, setOpenOptions }) {
+  const optionsRef = useRef();
+  useOutsideClick(optionsRef, "optionDropDown", () => setOpenOptions(false));
   return (
-    <div className="guestOptions" ref={optionRef}>
+    <div className="guestOptions" ref={optionsRef}>
       <OptionItem
         handleOptions={handleOptions}
         type="adult"
@@ -133,7 +134,7 @@ function GuestOptionList({ setOpenOptions, options, handleOptions }) {
         handleOptions={handleOptions}
         type="children"
         options={options}
-        minLimit={1}
+        minLimit={0}
       />
       <OptionItem
         handleOptions={handleOptions}
@@ -165,6 +166,30 @@ function OptionItem({ options, type, minLimit, handleOptions }) {
           <HiPlus className="icon" />
         </button>
       </div>
+    </div>
+  );
+}
+
+function User() {
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
+  return (
+    <div>
+      {isAuthenticated ? (
+        <div>
+          <strong>{user.name}</strong>
+          <button>
+            &nbsp; <MdLogout onClick={handleLogout} className="logout icon" />
+          </button>
+        </div>
+      ) : (
+        <NavLink to="/login">login</NavLink>
+      )}
     </div>
   );
 }

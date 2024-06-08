@@ -3,11 +3,11 @@ import Map from "../Map/Map";
 import { useBookmark } from "../context/BookmarkListContext";
 
 function BookmarkLayout() {
-  const {bookmarks} = useBookmark()
+  const { bookmarks } = useBookmark();
   return (
     <div className="appLayout">
       <div className="sidebar">
-        <Outlet/>
+        <Outlet />
       </div>
       <Map markerLocations={bookmarks} />
     </div>

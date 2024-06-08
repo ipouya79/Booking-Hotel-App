@@ -12,9 +12,8 @@ import useGeoLocation from "../../hooks/useGeoLocation";
 import useUrlLocation from "../../hooks/useUrlLocation";
 
 function Map({ markerLocations }) {
-  const [mapCenter, setMapCenter] = useState([20, 3]);
- const [lat,lng]  = useUrlLocation()
-
+  const [mapCenter, setMapCenter] = useState([20, 4]);
+  const [lat, lng] = useUrlLocation();
   const {
     isLoading: isLoadingPosition,
     position: geoLocationPosition,
@@ -35,13 +34,12 @@ function Map({ markerLocations }) {
       <MapContainer
         className="map"
         center={mapCenter}
-        zoom={13}
-        scrollWheelZoom={false}
+        zoom={6}
+        scrollWheelZoom={true}
       >
         <button onClick={getPosition} className="getLocation">
-          {isLoadingPosition ? "Loading..." : "use Your Location"}
+          {isLoadingPosition ? "Loading ..." : " Use Your Location"}
         </button>
-
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -54,11 +52,9 @@ function Map({ markerLocations }) {
           </Marker>
         ))}
       </MapContainer>
-      ,
     </div>
   );
 }
-
 export default Map;
 
 function ChangeCenter({ position }) {
@@ -70,7 +66,8 @@ function ChangeCenter({ position }) {
 function DetectClick() {
   const navigate = useNavigate();
   useMapEvent({
-    click: (e) => navigate(`/bookmark/add?lat=${e.latlng.lat}&lng=${e.latlng.lng}`),
+    click: (e) =>
+      navigate(`/bookmark/add?lat=${e.latlng.lat}&lng=${e.latlng.lng}`),
   });
   return null;
 }

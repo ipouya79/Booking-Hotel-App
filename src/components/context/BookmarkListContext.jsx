@@ -1,8 +1,15 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import axios from "axios";
-import toast from "react-hot-toast";
-const BASE_URL = "http://localhost:5000";
+import { toast } from "react-hot-toast";
+
 const BookmarkContext = createContext();
+const BASE_URL = "http://localhost:5000";
 
 const initialState = {
   bookmarks: [],
@@ -14,7 +21,10 @@ const initialState = {
 function bookmarkReducer(state, action) {
   switch (action.type) {
     case "loading":
-      return { ...state, isLoading: true };
+      return {
+        ...state,
+        isLoading: true,
+      };
     case "bookmarks/loaded":
       return {
         ...state,
@@ -48,9 +58,11 @@ function bookmarkReducer(state, action) {
         error: action.payload,
       };
     default:
-      throw new Error("unknown action");
+      throw new Error("Unknown action");
   }
 }
+
+// 1. pending, 2. success ,3. rejected
 
 function BookmarkListProvider({ children }) {
   const [{ bookmarks, isLoading, currentBookmark }, dispatch] = useReducer(
@@ -63,13 +75,12 @@ function BookmarkListProvider({ children }) {
       dispatch({ type: "loading" });
       try {
         const { data } = await axios.get(`${BASE_URL}/bookmarks`);
-        console.log(data);
         dispatch({ type: "bookmarks/loaded", payload: data });
       } catch (error) {
         toast.error(error.message);
         dispatch({
           type: "rejected",
-          payload: "an error occured in loading bookmarks",
+          payload: "an Errror occurred in loading bookmarks",
         });
       }
     }
@@ -87,7 +98,7 @@ function BookmarkListProvider({ children }) {
       toast.error(error.message);
       dispatch({
         type: "rejected",
-        payload: "an error occured in loading bookmarks",
+        payload: "an Error occurred in fetching single bookmark",
       });
     }
   }
@@ -96,14 +107,10 @@ function BookmarkListProvider({ children }) {
     dispatch({ type: "loading" });
     try {
       const { data } = await axios.post(`${BASE_URL}/bookmarks/`, newBookmark);
-
       dispatch({ type: "bookmark/created", payload: data });
     } catch (error) {
       toast.error(error.message);
-      dispatch({
-        type: "rejected",
-        payload: "an error occured in adding bookmark",
-      });
+      dispatch({ type: "rejected", payload: error.message });
     }
   }
 
@@ -111,16 +118,10 @@ function BookmarkListProvider({ children }) {
     dispatch({ type: "loading" });
     try {
       await axios.delete(`${BASE_URL}/bookmarks/${id}`);
-      dispatch({
-        type: "bookmark/deleted",
-        payload: id,
-      });
+      dispatch({ type: "bookmark/deleted", payload: id });
     } catch (error) {
       toast.error(error.message);
-      dispatch({
-        type: "rejected",
-        payload: "an error occured in delete bookmark",
-      });
+      dispatch({ type: "rejected", payload: error.message });
     }
   }
 
@@ -139,9 +140,16 @@ function BookmarkListProvider({ children }) {
     </BookmarkContext.Provider>
   );
 }
-
 export default BookmarkListProvider;
 
 export function useBookmark() {
   return useContext(BookmarkContext);
 }
+
+//  context  + reducer => value={{state, dispatch}} => SYNC ACTION => (no side effect !!)
+
+// ASYNC ACTION => reducer function is a PURE fucntion !!
+
+// 1. pass dispatch
+
+// 2. pass actoins => OK

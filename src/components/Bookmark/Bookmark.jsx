@@ -15,9 +15,11 @@ function Bookmark() {
 
   if (isLoading) return <Loader />;
   if (!bookmarks.length) return <p>there is no bookmarked location</p>;
+ 
   return (
     <div>
       <h2>BookmarkList</h2>
+
       <div className="bookmarkList">
         {bookmarks.map((item) => {
           return (
@@ -28,14 +30,13 @@ function Bookmark() {
               <div
                 className={`bookmarkItem ${
                   item.id === currentBookmark?.id ? "current-bookmark" : ""
-                }  `}
+                }`}
               >
                 <div>
                   <ReactCountryFlag svg countryCode={item.countryCode} />
                   &nbsp; <strong>{item.cityName}</strong> &nbsp;
                   <span>{item.country}</span>
                 </div>
-
                 <button onClick={(e) => handleDelete(e, item.id)}>
                   <HiTrash className="trash" />
                 </button>
@@ -47,5 +48,4 @@ function Bookmark() {
     </div>
   );
 }
-
 export default Bookmark;

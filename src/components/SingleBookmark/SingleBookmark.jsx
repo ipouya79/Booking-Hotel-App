@@ -5,28 +5,21 @@ import Loader from "../Loader/Loader";
 import ReactCountryFlag from "react-country-flag";
 
 function SingleBookmark() {
-  const navigate = useNavigate();
   const { id } = useParams();
+  const navigate = useNavigate();
   const { getBookmark, isLoading, currentBookmark } = useBookmark();
-
   useEffect(() => {
     getBookmark(id);
   }, [id]);
 
-  const handleBack = () => {
-    navigate(-1);
-  };
-
-  if (isLoading || !currentBookmark) return <Loader></Loader>;
-
+  if (isLoading || !currentBookmark) return <Loader />;
   return (
-    <div>
-      <button onClick={handleBack} className="btn btn--back">
+    <div className="currentBookmark">
+      <button onClick={() => navigate(-1)} className="btn btn--back">
         &larr; Back
       </button>
-      <h2 className="mt-2">{currentBookmark.cityName}</h2>
-
-      <div className="bookmarkItem mt-2">
+      <h2>{currentBookmark.cityName}</h2>
+      <div className={`bookmarkItem`}>
         <ReactCountryFlag svg countryCode={currentBookmark.countryCode} />
         &nbsp; <strong>{currentBookmark.cityName}</strong> &nbsp;
         <span>{currentBookmark.country}</span>
@@ -34,5 +27,4 @@ function SingleBookmark() {
     </div>
   );
 }
-
 export default SingleBookmark;
