@@ -1325,15 +1325,6 @@
   ],
   "bookmarks": [
     {
-      "cityName": "Sanandaj",
-      "country": "Iran (Islamic Republic of)",
-      "countryCode": "IR",
-      "latitude": "35.31372444726279",
-      "longitude": "47.03114358752335",
-      "host_location": "Sanandaj Iran (Islamic Republic of)",
-      "id": 5
-    },
-    {
       "cityName": "A Dakhla Oasis",
       "country": "Egypt",
       "countryCode": "EG",
@@ -1350,6 +1341,15 @@
       "longitude": "51.14685058593751",
       "host_location": "ShahriarIran (Islamic Republic of)",
       "id": 10
+    },
+    {
+      "cityName": "Ciempozuelos",
+      "country": "Spain",
+      "countryCode": "ES",
+      "latitude": "40.158341101642236",
+      "longitude": "-3.5829162597656254",
+      "host_location": "CiempozuelosSpain",
+      "id": 12
     }
   ]
 }
